@@ -55,5 +55,26 @@ jobs:
         # If true, hidden files will be included in the artifact. If false, hidden files will be excluded from the artifact.
     
         include-hidden-files: false
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_RBAC_CREDENTIALS }}
+    - name: Validate account
+      run: az account show
+    - name: Upload to Azure Blob Storage
+      env:
+        AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+        AZURE_CONTAINER_NAME: ${{ secrets.AZURE_CONTAINER_NAME }}
+        BINARY_PATH: ${{ secrets.BINARY_PATH }}
+      # this works
+      run: |
+        az storage blob upload \
+          --account-name $AZURE_STORAGE_ACCOUNT \
+          -f $BINARY_PATH \
+          -c $AZURE_CONTAINER_NAME \
+          -n resource-creator.zip \
+          --auth-mode login \
+          --overwrite
           
 

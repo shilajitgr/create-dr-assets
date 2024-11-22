@@ -22,12 +22,12 @@ const (
 	// vmName            = "goVM"
 	// secretData["vnet_name"]          = vmName + "-vnet"
 	// secretData["subnet_name"]        = vmName + "-subnet"
-	nsgName           	 =  "network-nsg"
+	nsgName = "network-nsg"
 	// nicName           = vmName + "-nic"
 	// diskName          = vmName + "-disk"
 	// secretData["ip_name"]      = vmName + "-publicIP"
 	// location          = "centralus"
-	vaultURL          = "https://rsc-config2.vault.azure.net/"
+	vaultURL = "https://rsc-config2.vault.azure.net/"
 )
 
 var (
@@ -81,8 +81,9 @@ func main() {
 	if err := json.Unmarshal([]byte(secretValue), &secretData); err != nil {
 		log.Fatalf("failed to parse secret value as JSON: %v", err)
 	}
-
-	conn, err = rscMgmtConnectionAzure()
+	secretData["resource_group_name"] = "vm_set"
+	// conn, err = rscMgmtConnectionAzure()
+	conn, err = azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
 		log.Fatalf("cannot connect to Azure:%+v", err)
 	}
@@ -111,11 +112,11 @@ func main() {
 	disksClient = computeClientFactory.NewDisksClient()
 
 	log.Println("start creating virtual machine...")
-	resourceGroup, err := createResourceGroup(ctx)
-	if err != nil {
-		log.Fatalf("cannot create resource group:%+v", err)
-	}
-	log.Printf("Created resource group: %s", *resourceGroup.ID)
+	// resourceGroup, err := createResourceGroup(ctx)
+	// if err != nil {
+	// 	log.Fatalf("cannot create resource group:%+v", err)
+	// }
+	// log.Printf("Created resource group: %s", *resourceGroup.ID)
 
 	virtualNetwork, err := createVirtualNetwork(ctx)
 	if err != nil {
